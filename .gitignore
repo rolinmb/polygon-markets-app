@@ -3,3 +3,4 @@ main
 main.o
 main.exe
 go.sum
+.vscode
