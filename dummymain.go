@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	APIKEY = "HA"
+	APIKEY = "YOURKEYHERE"
 )
 
 func main() {
@@ -45,15 +45,15 @@ func main() {
 			log.Fatalf("main.go :: Crypto asset must be 6 or 7 letters (e.g. BTCUSD, DOGEUSD), got %q", asset)
 		}
 	}
-	// Build ticker prefix depending on mode
-	var ticker string
+	// Build symbol prefix depending on mode
+	var symbol string
 	switch mode {
 	case 0: // Equities
-		ticker = asset
+		symbol = asset
 	case 1: // Forex
-		ticker = "C:" + asset
+		symbol = "C:" + asset
 	case 2: // Crypto
-		ticker = "X:" + asset
+		symbol = "X:" + asset
 	}
 	// Third arg: from date
 	from, err := time.Parse("2006-01-02", os.Args[3])
@@ -69,19 +69,22 @@ func main() {
 	c := polygon.New(APIKEY)
 	// Build query parameters
 	params := models.ListAggsParams{
-		Ticker:     ticker,
+		Ticker:     symbol,
 		Multiplier: 1,
 		Timespan:   "day",
 		From:       models.Millis(from),
 		To:         models.Millis(to),
 	}.WithAdjusted(true).WithOrder(models.Order("asc")).WithLimit(120)
 	// Run query
+	var closes []float64
 	iter := c.ListAggs(context.Background(), params)
 	for iter.Next() {
 		item := iter.Item()
-		fmt.Printf("%s :: %+v\n", ticker, item)
+		fmt.Printf("%s :: %+v\n", symbol, item)
+		closes = append(closes, item.Close)
 	}
 	if iter.Err() != nil {
 		log.Fatal("main.go :: " + iter.Err().Error())
 	}
+	fmt.Println("main.go :: Collected closes:", closes)
 }
