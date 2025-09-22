@@ -14,12 +14,12 @@ import (
 )
 
 const (
-	APIKEY = "YOURAPIKEY"
+	APIKEY = "HA"
 )
 
 func main() {
 	if len(os.Args) != 5 {
-		log.Fatalf("main.go :: Usage: %s <MODE_NUMBER(0=Equities,1=Forex,2=Crypto)> <ASSET> <FROM_DATE(YYYY-MM-DD)> <TO_DATE(YYYY-MM-DD)>", os.Args[0])
+		log.Fatalf("main.go :: Usage: go run main.go <MODE_NUMBER(0=Equities,1=Forex,2=Crypto)> <ASSET> <FROM_DATE(YYYY-MM-DD)> <TO_DATE(YYYY-MM-DD)>")
 	}
 	// First arg: mode number
 	mode, err := strconv.Atoi(os.Args[1])
@@ -34,7 +34,7 @@ func main() {
 	switch mode {
 	case 0: // Equities
 		if len(asset) > 4 {
-			log.Fatalf("main.go :: Equities asset must be 4 letters, got %q", asset)
+			log.Fatalf("main.go :: Equities asset must be at most 4 letters, got %q", asset)
 		}
 	case 1: // Forex
 		if len(asset) != 6 {
