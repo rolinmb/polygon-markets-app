@@ -4,7 +4,16 @@
 #include <vector>
 #include "main.h"
 
+// Link with modern common controls
+#pragma comment(linker,"\"/manifestdependency:type='win32' \
+name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
+processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+
 HWND hComboMode, hEditAsset, hEditFrom, hEditTo, hButton;
+HFONT hFont; // global font
+
+// Forward declare
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     const char CLASS_NAME[] = "polygon-markets-app";
@@ -21,11 +30,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
         CLASS_NAME,
         "polygon-markets-app",
         WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, CW_USEDEFAULT, 600, 300,
+        CW_USEDEFAULT, CW_USEDEFAULT, 650, 280,
         NULL, NULL, hInstance, NULL
     );
 
     if (!hwnd) return 0;
+
+    // Create modern Segoe UI font
+    hFont = CreateFontA(
+        -16, 0, 0, 0, FW_NORMAL,
+        FALSE, FALSE, FALSE,
+        DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+        CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
+        "Segoe UI"
+    );
 
     ShowWindow(hwnd, nCmdShow);
     UpdateWindow(hwnd);
@@ -53,7 +71,6 @@ void RunGoProgram(const std::string& mode,
 
     std::string command = cmd.str();
 
-    // Mutable buffer
     std::vector<char> cmdline(command.begin(), command.end());
     cmdline.push_back('\0');
 
@@ -76,57 +93,70 @@ void RunGoProgram(const std::string& mode,
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
     case WM_CREATE: {
-        // Mode label + combo box
-        CreateWindowA("STATIC", "Mode:", WS_VISIBLE | WS_CHILD,
+        // Mode label
+        HWND hStaticMode = CreateWindowA("STATIC", "Mode:", WS_VISIBLE | WS_CHILD,
             10, 10, 100, 20, hwnd, NULL, NULL, NULL);
+        SendMessageA(hStaticMode, WM_SETFONT, (WPARAM)hFont, TRUE);
 
+        // Combo box
         hComboMode = CreateWindowA("COMBOBOX", "",
-            WS_VISIBLE | WS_CHILD | CBS_DROPDOWNLIST,
-            120, 10, 200, 100, hwnd, NULL, NULL, NULL);
+            WS_VISIBLE | WS_CHILD | CBS_DROPDOWNLIST | WS_VSCROLL,
+            120, 10, 200, 200, hwnd, NULL, NULL, NULL);
+        SendMessageA(hComboMode, WM_SETFONT, (WPARAM)hFont, TRUE);
 
         // Add items
         SendMessageA(hComboMode, CB_ADDSTRING, 0, (LPARAM)"Equities");
         SendMessageA(hComboMode, CB_ADDSTRING, 0, (LPARAM)"Foreign Exchange");
         SendMessageA(hComboMode, CB_ADDSTRING, 0, (LPARAM)"Cryptocurrency");
-        SendMessageA(hComboMode, CB_SETCURSEL, 0, 0); // default = Equities
+        SendMessageA(hComboMode, CB_SETCURSEL, 0, 0);
 
         // Asset
-        CreateWindowA("STATIC", "Asset:", WS_VISIBLE | WS_CHILD,
-            10, 40, 100, 20, hwnd, NULL, NULL, NULL);
+        HWND hStaticAsset = CreateWindowA("STATIC", "Asset:", WS_VISIBLE | WS_CHILD,
+            10, 50, 100, 20, hwnd, NULL, NULL, NULL);
+        SendMessageA(hStaticAsset, WM_SETFONT, (WPARAM)hFont, TRUE);
+
         hEditAsset = CreateWindowA("EDIT", "", WS_VISIBLE | WS_CHILD | WS_BORDER,
-            120, 40, 200, 20, hwnd, NULL, NULL, NULL);
+            120, 50, 200, 22, hwnd, NULL, NULL, NULL);
+        SendMessageA(hEditAsset, WM_SETFONT, (WPARAM)hFont, TRUE);
 
         // From date
-        CreateWindowA("STATIC", "From (YYYY-MM-DD):", WS_VISIBLE | WS_CHILD,
-            10, 70, 200, 20, hwnd, NULL, NULL, NULL);
+        HWND hStaticFrom = CreateWindowA("STATIC", "From (YYYY-MM-DD):", WS_VISIBLE | WS_CHILD,
+            10, 90, 200, 20, hwnd, NULL, NULL, NULL);
+        SendMessageA(hStaticFrom, WM_SETFONT, (WPARAM)hFont, TRUE);
+
         hEditFrom = CreateWindowA("EDIT", "", WS_VISIBLE | WS_CHILD | WS_BORDER,
-            230, 70, 180, 20, hwnd, NULL, NULL, NULL);
+            230, 90, 180, 22, hwnd, NULL, NULL, NULL);
+        SendMessageA(hEditFrom, WM_SETFONT, (WPARAM)hFont, TRUE);
 
         // To date
-        CreateWindowA("STATIC", "To (YYYY-MM-DD):", WS_VISIBLE | WS_CHILD,
-            10, 100, 200, 20, hwnd, NULL, NULL, NULL);
+        HWND hStaticTo = CreateWindowA("STATIC", "To (YYYY-MM-DD):", WS_VISIBLE | WS_CHILD,
+            10, 130, 200, 20, hwnd, NULL, NULL, NULL);
+        SendMessageA(hStaticTo, WM_SETFONT, (WPARAM)hFont, TRUE);
+
         hEditTo = CreateWindowA("EDIT", "", WS_VISIBLE | WS_CHILD | WS_BORDER,
-            230, 100, 180, 20, hwnd, NULL, NULL, NULL);
+            230, 130, 180, 22, hwnd, NULL, NULL, NULL);
+        SendMessageA(hEditTo, WM_SETFONT, (WPARAM)hFont, TRUE);
 
         // Button
         hButton = CreateWindowA("BUTTON", "Fetch Data", WS_VISIBLE | WS_CHILD,
-            200, 150, 150, 30, hwnd, (HMENU)1, NULL, NULL);
+            220, 180, 150, 35, hwnd, (HMENU)1, NULL, NULL);
+        SendMessageA(hButton, WM_SETFONT, (WPARAM)hFont, TRUE);
+
         break;
     }
     case WM_COMMAND:
         if (LOWORD(wParam) == 1) {
             int sel = (int)SendMessageA(hComboMode, CB_GETCURSEL, 0, 0);
 
-            // Map selection index -> mode number string
             std::string mode;
             if (sel == 0) mode = "0";
             else if (sel == 1) mode = "1";
             else if (sel == 2) mode = "2";
-            else mode = "0"; // default fallback
+            else mode = "0";
 
-            char bufAsset[8];
-            char bufFrom[11];
-            char bufTo[11];
+            char bufAsset[64];
+            char bufFrom[64];
+            char bufTo[64];
 
             GetWindowTextA(hEditAsset, bufAsset, sizeof(bufAsset));
             GetWindowTextA(hEditFrom, bufFrom, sizeof(bufFrom));
@@ -136,6 +166,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         }
         break;
     case WM_DESTROY:
+        DeleteObject(hFont); // cleanup
         PostQuitMessage(0);
         break;
     }
