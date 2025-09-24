@@ -46,7 +46,7 @@ func main() {
 		}
 	case 3: // Options
 		if len(asset) > 18 {
-			log.Fatalf("main.go :: Options asset must be  letters (e.g. SPY251219C00650000), got %q", asset)
+			log.Fatalf("main.go :: Options asset must be  letters (e.g. SPY251219C00650000 -> SPY 2025 12/19 Expiration Call 650 Strike), got %q", asset)
 		}
 	}
 	// Build symbol prefix depending on mode
