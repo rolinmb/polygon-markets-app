@@ -26,15 +26,15 @@ func main() {
 	if err != nil {
 		log.Fatalf("main.go :: Mode number must be an integer, got %q", os.Args[1])
 	}
-	if mode < 0 || mode > 2 {
-		log.Fatalf("main.go :: Mode number must be in range [0,2], got %d", mode)
+	if mode < 0 || mode > 3 {
+		log.Fatalf("main.go :: Mode number must be in range [0,3], got %d", mode)
 	}
 	// Second arg: asset symbol
 	asset := strings.ToUpper(os.Args[2])
 	switch mode {
 	case 0: // Equities
 		if len(asset) > 4 {
-			log.Fatalf("main.go :: Equities asset must be at most 4 letters, got %q", asset)
+			log.Fatalf("main.go :: Equities asset must be at most 4 letters (e.g. SPY, TSLA), got %q", asset)
 		}
 	case 1: // Forex
 		if len(asset) != 6 {
@@ -43,6 +43,10 @@ func main() {
 	case 2: // Crypto
 		if len(asset) < 6 || len(asset) > 7 {
 			log.Fatalf("main.go :: Crypto asset must be 6 or 7 letters (e.g. BTCUSD, DOGEUSD), got %q", asset)
+		}
+	case 3: // Options
+		if len(asset) > 18 {
+			log.Fatalf("main.go :: Options asset must be  letters (e.g. SPY251219C00650000), got %q", asset)
 		}
 	}
 	// Build symbol prefix depending on mode
@@ -54,6 +58,8 @@ func main() {
 		symbol = "C:" + asset
 	case 2: // Crypto
 		symbol = "X:" + asset
+	case 3: // Options
+		symbol = "O:" + asset
 	}
 	// Third arg: from date
 	from, err := time.Parse("2006-01-02", os.Args[3])

@@ -108,6 +108,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         SendMessageA(hComboMode, CB_ADDSTRING, 0, (LPARAM)"Equities");
         SendMessageA(hComboMode, CB_ADDSTRING, 0, (LPARAM)"Foreign Exchange");
         SendMessageA(hComboMode, CB_ADDSTRING, 0, (LPARAM)"Cryptocurrency");
+        SendMessageA(hComboMode, CB_ADDSTRING, 0, (LPARAM)"Options");
         SendMessageA(hComboMode, CB_SETCURSEL, 0, 0);
 
         // Asset
@@ -152,6 +153,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             if (sel == 0) mode = "0";
             else if (sel == 1) mode = "1";
             else if (sel == 2) mode = "2";
+            else if (sel == 3) mode = "3";
             else mode = "0";
 
             char bufAsset[64];
